@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "TradeLab — Your market. Your rules.",
+  title: "TradeLab — Research Terminal",
   description:
     "Build an exchange. Develop trading algorithms. Simulate the market. A learning-driven quantitative trading platform.",
 };

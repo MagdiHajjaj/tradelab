@@ -51,7 +51,7 @@ Read [`strategies/tradelab/strategy.py`](../strategies/tradelab/strategy.py). `u
 | I want to…                                   | Start with…                                                      |
 | -------------------------------------------- | ---------------------------------------------------------------- |
 | Change colors, spacing, or responsive layout | `apps/web/src/app/globals.css` (numbered sections)               |
-| Change the sidebar                           | `apps/web/src/components/sidebar.tsx`                            |
+| Change the main navigation                   | `apps/web/src/components/navigation.tsx`                         |
 | Change the chart                             | `apps/web/src/components/market-chart.tsx` and `price-chart.tsx` |
 | Change order form behavior                   | `apps/web/src/components/order-ticket.tsx`                       |
 | Change paper fills or account state          | `apps/web/src/lib/paper-exchange.ts`                             |

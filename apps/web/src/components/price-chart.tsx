@@ -21,7 +21,7 @@ export function PriceChart({
   const path = points
     .map(([x, y], i) => `${i === 0 ? "M" : "L"}${x.toFixed(2)},${y.toFixed(2)}`)
     .join(" ");
-  const color = negative ? "#f18e8e" : "#b9f56b";
+  const color = compact ? (negative ? "#a04434" : "#287055") : "#cf4c27";
   const gradient = `chart-${seed}-${compact ? "small" : "large"}`;
   return (
     <svg
@@ -33,7 +33,7 @@ export function PriceChart({
     >
       <defs>
         <linearGradient id={gradient} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity=".19" />
+          <stop offset="0%" stopColor={color} stopOpacity=".035" />
           <stop offset="100%" stopColor={color} stopOpacity="0" />
         </linearGradient>
       </defs>
@@ -45,9 +45,9 @@ export function PriceChart({
             x2={width}
             y1={y}
             y2={y}
-            stroke="#ffffff"
-            strokeOpacity=".055"
-            strokeDasharray="3 5"
+            stroke="#242826"
+            strokeOpacity=".12"
+            strokeDasharray="2 4"
           />
         ))}
       <path d={`${path} L${width},${height} L0,${height} Z`} fill={`url(#${gradient})`} />

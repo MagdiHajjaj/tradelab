@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Activity, ArrowUpRight, ArrowDownRight, ChevronDown } from "lucide-react";
+import { Activity, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { markets, type Market } from "@/lib/simulation";
 import { PriceChart } from "./price-chart";
 
@@ -9,12 +9,9 @@ export function MarketChart({ market, position }: { market: Market; position: nu
     <section className="panel chart-panel">
       <div className="chart-heading">
         <div className="instrument">
-          <span className="large-ticker" style={{ color: market.color }}>
-            {market.symbol[0]}
-          </span>
           <div>
             <h2>
-              {market.symbol} <ChevronDown size={14} />
+              {market.symbol}
               <span>NASDAQ</span>
             </h2>
             <p>{market.name}</p>

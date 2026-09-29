@@ -3,21 +3,17 @@
 import { useEffect, useReducer, useState } from "react";
 import {
   Activity,
-  ArrowRight,
   ArrowUpRight,
-  CircleHelp,
   Clock3,
   FlaskConical,
-  Menu,
   Pause,
   Play,
   Wallet,
-  X,
   Zap,
 } from "lucide-react";
 import { markets, type OrderRequest } from "@/lib/simulation";
 import { createOrder, exchangeReducer, initialExchange, quote } from "@/lib/paper-exchange";
-import { Sidebar, type View } from "./sidebar";
+import { Navigation, type View } from "./navigation";
 import { MarketStrip } from "./market-strip";
 import { MarketChart } from "./market-chart";
 import { MarketsView } from "./markets-view";
@@ -31,12 +27,11 @@ const money = (value: number) =>
   value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 export default function Dashboard() {
   const [view, setView] = useState<View>("Overview");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [menuOpen, setNavigationOpen] = useState(false);
   const [selected, setSelected] = useState("AAPL");
   const [running, setRunning] = useState(true);
   const [strategyRunning, setStrategyRunning] = useState(false);
   const [tab, setTab] = useState("All orders");
-  const [banner, setBanner] = useState(true);
   const [state, dispatch] = useReducer(exchangeReducer, initialExchange);
   useEffect(() => {
     if (!running) return;
@@ -64,58 +59,39 @@ export default function Dashboard() {
   };
   return (
     <div className="app-shell">
-      <Sidebar
+      <Navigation
         view={view}
         setView={setView}
-        open={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
+        open={menuOpen}
+        onOpen={() => setNavigationOpen(true)}
+        onClose={() => setNavigationOpen(false)}
       />
       <main className="main">
-        <header className="topbar">
-          <div className="breadcrumb">
-            <button
-              className="icon-button mobile-menu"
-              aria-label="Open menu"
-              onClick={() => setSidebarOpen(true)}
-            >
-              <Menu size={20} />
-            </button>
-            <span>Workspace</span>
-            <span className="slash">/</span>
-            <b>{view}</b>
-          </div>
-          <div className="header-actions">
-            <span className="environment">
-              <span className="status-dot" />
-              Simulation environment
-            </span>
-            <button
-              className="icon-button help-button"
-              aria-label="Open learning path"
-              onClick={() => setView("Learning path")}
-            >
-              <CircleHelp size={18} />
-            </button>
-            <span className="avatar" title="Local learner">
-              M
-            </span>
-          </div>
-        </header>
+        <div className="topbar">
+          <span>
+            EXPERIMENTAL EXCHANGE <span className="slash">/</span> LOCAL SESSION
+          </span>
+          <span className="environment">
+            <span className={`status-dot ${running ? "" : "paused"}`} />
+            {running ? "SIMULATION RUNNING" : "SIMULATION PAUSED"}
+            <span className="slash">/</span>USD
+          </span>
+        </div>
         <div className="page-content">
           <div className="page-heading">
             <div>
-              <div className="eyebrow">YOUR MARKET. YOUR RULES.</div>
+              <div className="eyebrow">TRADELAB / RESEARCH & EXECUTION</div>
               <h1>
                 {view === "Overview"
-                  ? "Exchange overview"
+                  ? "Market monitor."
                   : view === "Strategies"
                     ? "Strategy lab"
                     : view}
               </h1>
               <p>
                 {view === "Overview"
-                  ? "A little curiosity. A lot of possibility. Let’s make a market."
-                  : "Build an exchange. Develop trading algorithms. Simulate the market."}
+                  ? "Simulated equities. One session. Every order accounted for."
+                  : "Exchange infrastructure & quantitative research."}
               </p>
             </div>
             <div className="heading-actions">
@@ -132,30 +108,6 @@ export default function Dashboard() {
               </button>
             </div>
           </div>
-          {banner && view === "Overview" && (
-            <div className="welcome-banner">
-              <span className="banner-icon">
-                <FlaskConical size={21} />
-              </span>
-              <div>
-                <b>Welcome to your trading playground.</b>
-                <span>
-                  {" "}
-                  Experiment freely with $100,000 in virtual capital. Every trade is a lesson.
-                </span>
-              </div>
-              <button onClick={() => setView("Learning path")}>
-                Start exploring <ArrowRight size={14} />
-              </button>
-              <button
-                className="icon-button"
-                aria-label="Dismiss welcome message"
-                onClick={() => setBanner(false)}
-              >
-                <X size={15} />
-              </button>
-            </div>
-          )}
           {(view === "Overview" || view === "Activity") && (
             <div className="metrics-grid">
               <Metric
@@ -178,7 +130,7 @@ export default function Dashboard() {
                 detail={
                   <>
                     <span className="status-dot" />
-                    <span>Ready to put to work</span>
+                    <span>Unallocated capital</span>
                   </>
                 }
               />
@@ -250,7 +202,7 @@ export default function Dashboard() {
             </span>
             <span>
               <Clock3 size={12} />
-              Session only <span className="footer-divider">·</span> Built to understand.
+              Session only <span className="footer-divider">·</span> v0.1.0
             </span>
           </footer>
         </div>

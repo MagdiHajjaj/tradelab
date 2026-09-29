@@ -10,7 +10,7 @@ From the repository root: `npm ci`, then `npm run dev`. Open http://localhost:30
 | `src/components` | Dashboard UI, organized by visible feature                     |
 | `src/lib`        | Synthetic data, order types, validation, paper account reducer |
 
-Start at `src/app/page.tsx`, then follow `components/dashboard.tsx` into the relevant feature. `lib/paper-exchange.ts` is the single place that mutates simulated account state. Global CSS uses numbered sections for theme, shell, trading, activity, secondary views, and responsive layout.
+Start at `src/app/page.tsx`, then follow `components/dashboard.tsx` into the relevant feature. `lib/paper-exchange.ts` is the single place that mutates simulated account state. Global CSS uses numbered sections for the palette, masthead, account ledger, trading tools, order activity, secondary views, and responsive layout. The interface uses paper tones, ink rules, serif headings, and orange accents.
 
 The simulation runs locally in the browser and resets on refresh. Market data, chart history, depth, and strategy preview signals are illustrative. No requests reach a real broker or the Go gateway.
 

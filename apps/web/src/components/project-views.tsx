@@ -44,9 +44,9 @@ export function Strategies({
   return (
     <div className="view-content">
       <div className="section-intro">
-        <span className="eyebrow">THE STRATEGY LAB</span>
-        <h2>Turn an idea into an experiment.</h2>
-        <p>Independent algorithms. A shared exchange. Room to learn.</p>
+        <span className="eyebrow">QUANTITATIVE RESEARCH</span>
+        <h2>Strategy register.</h2>
+        <p>Signal generation, parameters, and experiment status.</p>
       </div>
       <div className="strategy-grid">
         {strategies.map((s, i) => (
@@ -128,9 +128,9 @@ export function Architecture() {
   return (
     <div className="view-content">
       <div className="section-intro">
-        <span className="eyebrow">SMALL PIECES. CLEAR BOUNDARIES.</span>
+        <span className="eyebrow">SYSTEM REFERENCE</span>
         <h2>Understand every layer.</h2>
-        <p>Each service has one job. Build confidence in one layer before connecting the next.</p>
+        <p>Service responsibilities and current implementation status.</p>
       </div>
       <div className="architecture-grid">
         {services.map((s) => (
@@ -190,8 +190,8 @@ export function LearningPath() {
   return (
     <div className="view-content learning-view">
       <div className="section-intro">
-        <span className="eyebrow">LEARNING IS THE PRODUCT</span>
-        <h2>One experiment at a time.</h2>
+        <span className="eyebrow">PROJECT NOTES</span>
+        <h2>Build sequence.</h2>
         <p>A practical route from your first order to a distributed trading system.</p>
       </div>
       {steps.map((s, i) => (

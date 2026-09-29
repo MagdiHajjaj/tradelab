@@ -99,9 +99,9 @@ export function OrdersTable({
                 ? "Your executions will appear here"
                 : tab === "Open orders"
                   ? "No resting orders"
-                  : "Your first trade starts here"}
+                  : "No orders in this session"}
             </b>
-            <p>Use the order ticket to explore the simulated exchange.</p>
+            <p>Submitted orders and executions will be recorded here.</p>
           </div>
           <span className="keyboard-hint">100% paper trading</span>
         </div>

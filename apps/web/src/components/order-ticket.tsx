@@ -24,7 +24,7 @@ export function OrderTicket({
   return (
     <section className="panel order-ticket">
       <div className="panel-title">
-        <h2>Place an order</h2>
+        <h2>Order entry</h2>
         <span className="small-label">PAPER</span>
       </div>
       <div className="segmented side-toggle">
@@ -152,7 +152,7 @@ export function OrderTicket({
         </b>
       </div>
       <p className="paper-note">
-        <ShieldCheck size={13} /> Virtual funds. Real learning.
+        <ShieldCheck size={13} /> Paper account · No broker connected
       </p>
     </section>
   );
