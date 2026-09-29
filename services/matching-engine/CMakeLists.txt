@@ -1,0 +1,30 @@
+cmake_minimum_required(VERSION 3.24)
+project(tradelab_matching_engine VERSION 0.1.0 LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+add_library(order_book src/order_book.cpp)
+target_include_directories(order_book PUBLIC include)
+if(MSVC)
+  target_compile_options(order_book PRIVATE /W4)
+else()
+  target_compile_options(order_book PRIVATE -Wall -Wextra -Wpedantic)
+endif()
+add_executable(matching_engine src/main.cpp)
+target_link_libraries(matching_engine PRIVATE order_book)
+
+include(CTest)
+if(BUILD_TESTING)
+  include(FetchContent)
+  FetchContent_Declare(googletest
+    GIT_REPOSITORY https://github.com/google/googletest.git
+    GIT_TAG v1.17.0
+    GIT_SHALLOW TRUE)
+  set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+  FetchContent_MakeAvailable(googletest)
+  add_executable(order_book_tests tests/order_book_test.cpp)
+  target_link_libraries(order_book_tests PRIVATE order_book GTest::gtest_main)
+  include(GoogleTest)
+  gtest_discover_tests(order_book_tests)
+endif()

@@ -1,0 +1,20 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    ports:
+      - "127.0.0.1:3000:3000"
+  gateway:
+    build: services/gateway
+    environment:
+      GATEWAY_ADDR: ":8080"
+    ports:
+      - "127.0.0.1:8080:8080"
+  # Offline examples exit after printing their output. Opt in explicitly.
+  matching-engine:
+    profiles: [examples]
+    build: services/matching-engine
+  strategy:
+    profiles: [examples]
+    build: strategies

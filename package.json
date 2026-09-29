@@ -1,0 +1,26 @@
+{
+  "name": "tradelab",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/web"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=@tradelab/web",
+    "build": "npm run build --workspace=@tradelab/web",
+    "start": "npm run start --workspace=@tradelab/web",
+    "lint": "npm run lint --workspace=@tradelab/web",
+    "typecheck": "npm run typecheck --workspace=@tradelab/web",
+    "test": "npm run test --workspace=@tradelab/web",
+    "test:e2e": "playwright test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "prettier": "^3.9.9"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
