@@ -12,11 +12,13 @@ namespace tradelab {
 
 // Prices are integer cents. Avoid floating-point equality in matching logic.
 enum class Side { Buy, Sell };
+enum class OrderType { Limit, Market };
 struct Order {
     std::string id;
     Side side;
     std::int64_t price_cents;
     std::int64_t quantity;
+    OrderType type = OrderType::Limit;
 };
 struct Trade {
     std::string maker_id;
@@ -25,9 +27,20 @@ struct Trade {
     std::int64_t quantity;
 };
 
+struct ExecutionReport {
+    std::string order_id;
+    std::string status;
+    std::int64_t filled_quantity = 0;
+    std::int64_t remaining_quantity = 0;
+    std::int64_t cancelled_quantity = 0;
+    std::vector<Trade> trades;
+};
+
 // One book per symbol. A single owner calls it sequentially; no shared locks.
 class OrderBook {
 public:
+    ExecutionReport submit(Order order);
+    // Convenience API retained for callers interested only in trades.
     std::vector<Trade> add(Order order);
     bool cancel(const std::string& id);
     std::int64_t resting_quantity(const std::string& id) const;

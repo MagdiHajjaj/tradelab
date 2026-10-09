@@ -105,8 +105,8 @@ export function Architecture() {
       title: "API gateway",
       tech: "Go · HTTP",
       path: "services/gateway",
-      text: "Expose health and market metadata. Order routing and WebSocket streaming come next.",
-      status: "Service scaffold",
+      text: "Route orders and cancellations to five C++ engines. Readiness tracks process availability.",
+      status: "Order routing ready",
     },
     {
       icon: Cpu,
@@ -121,8 +121,8 @@ export function Architecture() {
       title: "Strategy engine",
       tech: "Python · Standard library",
       path: "strategies",
-      text: "Generate moving average crossover signals without importing exchange internals.",
-      status: "Offline strategy",
+      text: "Generate offline crossover signals. A separate HTTP client can submit exchange orders.",
+      status: "Strategy + HTTP client",
     },
   ];
   return (
@@ -171,13 +171,13 @@ export function LearningPath() {
     {
       title: "Connect the services",
       detail:
-        "Define engine transport, route orders by symbol through Go, and publish executions over WebSockets.",
+        "Go now routes orders to C++ by symbol. Next: book snapshots, WebSocket events, and the browser data adapter.",
       done: false,
     },
     {
       title: "Run your first strategy",
       detail:
-        "Read the Python moving average strategy, inspect its offline signals, then connect it to the gateway after routing is ready.",
+        "Run the connected Python exchange demo, then add risk-aware sizing before wiring crossover signals into a strategy runner.",
       done: false,
     },
     {

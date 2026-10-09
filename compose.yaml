@@ -6,7 +6,9 @@ services:
     ports:
       - "127.0.0.1:3000:3000"
   gateway:
-    build: services/gateway
+    build:
+      context: .
+      dockerfile: services/gateway/Dockerfile
     environment:
       GATEWAY_ADDR: ":8080"
     ports:

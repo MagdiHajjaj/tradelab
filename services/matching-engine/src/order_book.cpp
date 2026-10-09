@@ -39,21 +39,42 @@ bool remove_order(Levels& levels, const std::string& id) {
 }
 } // namespace
 
-std::vector<Trade> OrderBook::add(Order order) {
-    if (order.id.empty() || order.price_cents <= 0 || order.quantity <= 0 ||
-        (order.side != Side::Buy && order.side != Side::Sell)) {
-        throw std::invalid_argument("Order needs an ID, valid side, positive price and quantity");
+ExecutionReport OrderBook::submit(Order order) {
+    const bool market = order.type == OrderType::Market;
+    if (order.id.empty() || order.quantity <= 0 ||
+        (market ? order.price_cents != 0 : order.price_cents <= 0) ||
+        (order.side != Side::Buy && order.side != Side::Sell) ||
+        (order.type != OrderType::Limit && order.type != OrderType::Market)) {
+        throw std::invalid_argument("invalid_order");
     }
-    if (!seen_ids_.insert(order.id).second) throw std::invalid_argument("Duplicate order ID");
-    std::vector<Trade> trades;
+    if (!seen_ids_.insert(order.id).second) throw std::invalid_argument("duplicate_order_id");
+    ExecutionReport report;
+    report.order_id = order.id;
+    const auto requested_quantity = order.quantity;
     if (order.side == Side::Buy) {
-        match(order, asks_, [&](auto price) { return price <= order.price_cents; }, trades);
-        if (order.quantity > 0) bids_[order.price_cents].push_back(std::move(order));
+        match(order, asks_, [&](auto price) { return market || price <= order.price_cents; }, report.trades);
     } else {
-        match(order, bids_, [&](auto price) { return price >= order.price_cents; }, trades);
-        if (order.quantity > 0) asks_[order.price_cents].push_back(std::move(order));
+        match(order, bids_, [&](auto price) { return market || price >= order.price_cents; }, report.trades);
     }
-    return trades;
+    report.filled_quantity = requested_quantity - order.quantity;
+    if (market) {
+        // Market orders are immediate-or-cancel: never leave a zero-price order resting.
+        report.cancelled_quantity = order.quantity;
+        report.status = order.quantity == 0 ? "filled" : "cancelled";
+    } else {
+        report.remaining_quantity = order.quantity;
+        report.status = order.quantity == 0 ? "filled" :
+            report.filled_quantity > 0 ? "partially_filled" : "open";
+        if (order.quantity > 0) {
+            if (order.side == Side::Buy) bids_[order.price_cents].push_back(std::move(order));
+            else asks_[order.price_cents].push_back(std::move(order));
+        }
+    }
+    return report;
+}
+
+std::vector<Trade> OrderBook::add(Order order) {
+    return submit(std::move(order)).trades;
 }
 
 bool OrderBook::cancel(const std::string& id) {

@@ -2,16 +2,16 @@
 
 ## Current foundation
 
-The dashboard, C++ matching library, Go HTTP gateway, and Python algorithm run independently. The dashboard owns a temporary browser simulation so you can use and improve the UI immediately. No service integration is implied by the visual dashboard.
+The Go gateway now manages five independent C++ engine processes and routes market/limit orders and cancellations. A separate Python HTTP client can submit orders and receive actual execution reports. The algorithm itself remains offline. The dashboard still owns a temporary browser simulation; its cash and positions are not backend accounts.
 
 ## Target service flow
 
 ```mermaid
 flowchart LR
-    W[Next.js dashboard] -->|HTTP order requests| G[Go gateway]
+    W[Next.js dashboard] -.->|HTTP adapter: planned| G[Go gateway]
     P[Python strategies] -->|HTTP order requests| G
-    G -->|Engine transport: to be implemented| A[C++ AAPL engine]
-    G -->|Engine transport: to be implemented| N[C++ NVDA engine]
+    G -->|v1 stdin/stdout pipe| A[C++ AAPL engine]
+    G -->|v1 stdin/stdout pipe| N[C++ NVDA engine]
     A -->|Execution events| G
     N -->|Execution events| G
     G -->|WebSockets: to be implemented| W
@@ -33,22 +33,20 @@ Some target responsibilities in this table are not implemented yet. Current capa
 
 ## Matching semantics implemented today
 
-- Limit orders only, for one symbol per `OrderBook` instance.
+- Market and limit orders, for one symbol per `OrderBook` instance.
 - Highest bid and lowest ask get priority; equal prices use FIFO.
 - Executions happen at the resting order's price.
-- Partial fills decrement both quantities; unfilled incoming quantity rests.
+- Partial fills decrement both quantities. Limit remainders rest; market remainders are immediately cancelled.
 - Prices and quantities are positive signed 64-bit integers. Prices represent cents.
 - Order IDs cannot be reused in the same book lifetime. Unknown cancellations return false.
-- A book is single-thread owned. It has no locks, persistence, risk checks, or network transport.
+- A book is single-thread owned. The separate pipe server handles transport; the core has no locks, persistence, or risk checks.
+- The gateway serializes requests per process, validates reply sequences, and fails closed after a timeout or process failure. See [API.md](API.md).
 
-## Integration decisions for milestone 03
+## Remaining integration work
 
-1. Define versioned order and execution contracts with IDs, symbols, sides, integer-cent prices, quantities, and sequence numbers.
-2. Select a small process transport between Go and C++; preserve FIFO per symbol and return explicit failures.
-3. Let Go start and monitor one matching process per symbol.
-4. Replace the gateway's 501 response only after an engine can accept or reject an order.
-5. Add WebSocket subscriptions, snapshots, incremental events, reconnect handling, and bounded queues.
-6. Add a frontend data adapter to select either the browser simulation or the connected backend explicitly.
-7. Add an end-to-end test: Python submits an order, C++ executes it, and the browser receives its event.
+1. Add book snapshots and WebSocket subscriptions with incremental events, reconnect handling, and bounded queues.
+2. Add a frontend data adapter to select either the browser simulation or the connected backend explicitly.
+3. Extend the passing Python → Go → C++ integration tests to verify browser event delivery.
+4. Add a strategy runner with position sizing and backend account/risk checks.
 
 Persistence, recovery, account risk controls, latency benchmarks, and larger-scale distribution follow after this path is correct and observable.

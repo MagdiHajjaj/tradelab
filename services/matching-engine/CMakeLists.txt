@@ -13,6 +13,8 @@ else()
 endif()
 add_executable(matching_engine src/main.cpp)
 target_link_libraries(matching_engine PRIVATE order_book)
+add_executable(engine_server src/server.cpp)
+target_link_libraries(engine_server PRIVATE order_book)
 
 include(CTest)
 if(BUILD_TESTING)

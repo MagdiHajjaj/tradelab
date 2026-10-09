@@ -5,7 +5,7 @@ export function OverviewResources({ setView }: { setView: (view: View) => void }
   return (
     <div className="research-notes">
       <span className="eyebrow">DEVELOPMENT LOG / 001</span>
-      <p>Matching core ready. Gateway routing and live streaming are next.</p>
+      <p>Go → C++ order routing verified. Browser streaming is next.</p>
       <button onClick={() => setView("Architecture")}>
         System architecture <ArrowUpRight size={14} />
       </button>

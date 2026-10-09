@@ -53,3 +53,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: docker compose --profile examples build
+  backend-integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: services/gateway/go.mod
+          cache: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+      - run: python scripts/check_backend.py
+      - run: go test -race -count=1 ./...
+        working-directory: services/gateway
+        env:
+          ENGINE_TEST_PATH: ${{ github.workspace }}/build/engine/engine_server

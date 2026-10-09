@@ -11,21 +11,23 @@
 - [x] Implement C++20 limit orders with price-time priority.
 - [x] Test best price, FIFO, partial fills, cancellation, and invalid input.
 - [x] Keep matching separate from quantitative algorithms.
-- [ ] Add market orders and explicit execution reports to the C++ core.
+- [x] Add market orders and explicit execution reports to the C++ core.
 
 ## 03 — Connect the system
 
 - [x] Scaffold the Go gateway with health and market metadata.
-- [ ] Define versioned order/event contracts.
-- [ ] Manage independent C++ engines per symbol in Go.
-- [ ] Route orders and cancellations through the gateway.
+- [x] Define versioned order and execution-report contracts (streaming events follow with WebSockets).
+- [x] Manage independent C++ engines per symbol in Go.
+- [x] Route orders and cancellations through the gateway.
+- [x] Verify Python → Go → C++ fills, concurrent requests, and engine failure handling.
 - [ ] Stream market and execution events with WebSockets.
 - [ ] Connect the dashboard through a replaceable data adapter.
 
 ## 04 — Test a quantitative idea
 
 - [x] Implement a dependency-free offline Python crossover strategy.
-- [ ] Add a gateway client, position sizing, and account/risk checks.
+- [x] Add a Python gateway client and a connected exchange demo.
+- [ ] Add position sizing and backend account/risk checks.
 - [ ] Run reproducible backtests with fees, spread, and slippage.
 - [ ] Add mean reversion and compare results against a baseline.
 

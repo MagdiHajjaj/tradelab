@@ -19,15 +19,15 @@ Open **http://localhost:3000**. Requires Node.js 22 or newer. The dashboard star
 
 ## Your stack
 
-| Component               | Technology                              | Initial commit                                                          |
-| ----------------------- | --------------------------------------- | ----------------------------------------------------------------------- |
-| Matching engine         | C++20                                   | Price-time priority, partial fills, cancellation, Google Test           |
-| API gateway             | Go                                      | Health and market endpoints; explicit 501 for unconnected order routing |
-| Quantitative algorithms | Python                                  | Independent, offline moving average crossover strategy                  |
-| Frontend                | Next.js, React, TypeScript              | Interactive dashboard and browser paper exchange                        |
-| Real-time communication | WebSockets                              | Planned for service integration; browser currently uses a local timer   |
-| Infrastructure          | Docker, Linux                           | Dockerfiles, Compose, Ubuntu CI runners                                 |
-| Testing and CI/CD       | Google Test, Go testing, GitHub Actions | CI configuration for each service and container builds                  |
+| Component               | Technology                              | Current status                                                           |
+| ----------------------- | --------------------------------------- | ------------------------------------------------------------------------ |
+| Matching engine         | C++20                                   | Market/limit orders, price-time priority, execution reports, Google Test |
+| API gateway             | Go                                      | Per-symbol C++ processes, HTTP order routing, cancellation, readiness    |
+| Quantitative algorithms | Python                                  | Independent crossover strategy plus HTTP client and exchange demo        |
+| Frontend                | Next.js, React, TypeScript              | Interactive dashboard and browser paper exchange                         |
+| Real-time communication | WebSockets                              | Planned for service integration; browser currently uses a local timer    |
+| Infrastructure          | Docker, Linux                           | Dockerfiles, Compose, Ubuntu CI runners                                  |
+| Testing and CI/CD       | Google Test, Go testing, GitHub Actions | CI configuration for each service and container builds                   |
 
 The C++ exchange and Python strategies stay separate. The frontend simulation makes the interface useful while the distributed services are being connected. It is **not** the C++ exchange running in the browser.
 
@@ -54,9 +54,9 @@ tradelab/
 
 - Responsive trading workstation, searchable markets, illustrative charts and depth.
 - Session-scoped paper account, market/limit orders, automatic limit fills, cancellation, CSV export, and simulation pause/resume.
-- Standalone C++ limit order book with integer-cent prices, best-price matching, FIFO within a price level, and partial fills.
-- Go health and market metadata API.
-- Python strategy that emits crossover signals from a deterministic offline price stream.
+- C++ market/limit order book with integer-cent prices, best-price matching, FIFO within each price level, partial fills, and explicit execution reports.
+- Go gateway managing five independent C++ processes, with order submission, cancellation, readiness, and failure handling.
+- Python crossover strategy, an independent HTTP client, and a connected order demo; end-to-end tests verify Python → Go → C++ fills.
 
 ## Deliberate limits
 
@@ -64,7 +64,15 @@ tradelab/
 - Refreshing the page resets the paper account. Short selling, fees, persistence, and partial fills against displayed browser depth are not implemented.
 - The browser fills at its synthetic bid/ask and assumes sufficient liquidity. Its depth display is illustrative. Open orders do not reserve funds; balances are checked again at execution, and unaffordable orders are cancelled.
 - The strategy preview in the UI is illustrative and does not run Python or submit orders.
-- The C++ engine is a library plus a demo executable. The gateway does not spawn or route to engines yet. WebSocket streaming is the next integration milestone.
+- The backend books start empty and reset on restart. Backend account/risk checks, persistence, WebSocket streaming, and browser integration remain future work. A failed engine is not silently restarted.
+
+## Verify and run the backend
+
+```sh
+python scripts/check_backend.py
+```
+
+This builds C++ and Go, runs their tests, and verifies actual Python-to-exchange executions. Requires CMake 3.24+, a C++20 compiler, Go 1.26+, Git, and Python 3.11+. It also recognizes this workspace's portable Windows tools. See [the backend API guide](docs/API.md) for exact startup commands and example requests.
 
 ## Run and test each component
 
@@ -92,7 +100,7 @@ Run the web and gateway in Linux containers with Docker Desktop or Docker Engine
 docker compose up --build
 ```
 
-The website is on port 3000; gateway health is at `http://localhost:8080/healthz`. The services start independently; this does not connect the paper UI to the gateway.
+The website is on port 3000; gateway health is at `http://localhost:8080/healthz` and engine readiness is at `/readyz`. The gateway container includes and manages the C++ engines. The browser paper UI remains independent.
 
 Run the short offline demos:
 

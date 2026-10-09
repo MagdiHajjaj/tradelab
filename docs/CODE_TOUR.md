@@ -26,11 +26,12 @@ Open [`services/matching-engine/include/tradelab/order_book.hpp`](../services/ma
 
 Then read [`order_book.cpp`](../services/matching-engine/src/order_book.cpp):
 
-1. `add()` validates an order and selects the opposite side of the book.
+1. `submit()` validates an order and selects the opposite side of the book.
 2. `match()` visits the best price first.
 3. A deque keeps arrival order within each price level.
 4. A trade uses the resting order's price and the smaller remaining quantity.
-5. Any unfilled incoming quantity rests on the book.
+5. A limit remainder rests; a market remainder is cancelled immediately.
+6. An execution report records filled, resting, and cancelled quantities.
 
 Read the [tests](../services/matching-engine/tests/order_book_test.cpp) next. Each test demonstrates one rule with tiny numbers. Modify one example and predict the result before running it.
 
@@ -38,13 +39,22 @@ Read the [tests](../services/matching-engine/tests/order_book_test.cpp) next. Ea
 
 [`services/gateway/cmd/gateway/main.go`](../services/gateway/cmd/gateway/main.go) starts the server. [`internal/api/handler.go`](../services/gateway/internal/api/handler.go) defines its routes.
 
-The gateway currently returns `501 engine_not_connected` for order requests. This is the next boundary to implement: route each symbol to its own C++ engine and publish resulting events over WebSockets. See the [architecture guide](ARCHITECTURE.md).
+Follow a real backend order in this order:
+
+1. `internal/exchange/contracts.go` defines and validates the public order/report types.
+2. `internal/api/handler.go` receives JSON and routes the request.
+3. `internal/engine/manager.go` selects the symbol's process.
+4. `internal/engine/process.go` sends one command through its pipe and waits for the matching reply.
+5. `services/matching-engine/src/server.cpp` parses the command and calls the order book.
+6. The execution report returns through the same layers as JSON.
+
+Run `python scripts/check_backend.py` to build and test this complete path. [API.md](API.md) shows request examples, limits, startup commands, and failure behavior. WebSocket streaming and the browser adapter are next.
 
 ## 4. Try an algorithm separately
 
 Read [`strategies/tradelab/strategy.py`](../strategies/tradelab/strategy.py). `update()` consumes one price and may emit `buy` or `sell`. It does not reach into the order book, alter balances, or know how the exchange works.
 
-[`__main__.py`](../strategies/tradelab/__main__.py) supplies synthetic prices and prints signals. Later, a separate adapter can convert signals into gateway requests.
+[`__main__.py`](../strategies/tradelab/__main__.py) supplies synthetic prices and prints signals. [`client.py`](../strategies/tradelab/client.py) is the independent HTTP adapter; [`exchange_demo.py`](../strategies/tradelab/exchange_demo.py) submits sample orders through the connected backend. The strategy itself stays offline until risk-aware sizing and a runner are implemented.
 
 ## Where do I change something?
 
